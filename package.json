@@ -1,0 +1,38 @@
+{
+  "name": "poetry-painting-ai-qwen",
+  "version": "2.0.0",
+  "description": "古诗配画智能体 V2.0 通义版 - 基于阿里云通义千问和通义万相的AI教育应用",
+  "main": "古诗配画智能体.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site, no build needed'",
+    "start": "python -m http.server 8000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "ai", 
+    "education", 
+    "poetry", 
+    "painting", 
+    "qwen", 
+    "wanx", 
+    "aliyun", 
+    "chinese-literature"
+  ],
+  "author": "景然老师",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/poetry-painting-ai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/poetry-painting-ai/issues"
+  },
+  "homepage": "https://poetry-painting-ai.vercel.app"
+} 
