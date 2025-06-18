@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古诗配画智能体 V1.3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .nav-tabs {
+            border-bottom: none;
+            background: #f8f9fa;
+            padding: 10px 20px 0;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #666;
+            font-weight: 500;
+            padding: 12px 20px;
+            margin-right: 5px;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab-pane {
+            padding: 30px;
+            min-height: 600px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .streaming-text {
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        .streaming-text h1,
+        .streaming-text h2,
+        .streaming-text h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .streaming-text h2 {
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+        
+        .streaming-text ul,
+        .streaming-text ol {
+            margin-left: 20px;
+        }
+        
+        .streaming-text p {
+            margin-bottom: 10px;
+        }
+        
+        .streaming-text strong {
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        .streaming-text code {
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .history-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .history-time {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner-border {
+            color: #667eea;
+        }
+        
+        .config-panel {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .knowledge-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .knowledge-item h6 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .style-option {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .style-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+        }
+        
+        .alert code {
+            background-color: rgba(0,0,0,0.1);
+            color: inherit;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-pane {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1><i class="bi bi-palette"></i> 古诗配画智能体</h1>
+            <p>融合AI智能理解与创作，让古诗意境跃然纸上</p>
+        </div>
+
+        <!-- CORS运行提醒 -->
+        <div id="corsWarning" class="alert alert-info" style="display: none;">
+            <h6><i class="bi bi-info-circle"></i> 运行环境检测</h6>
+            <p><strong>检测到您可能通过本地文件运行应用。</strong></p>
+            <p>为避免CORS跨域问题，建议通过HTTP服务器运行：</p>
+            <code>python -m http.server 8000</code> 然后访问 <strong>http://localhost:8000</strong>
+        </div>
+
+        <script>
+        // 检测运行环境并显示提醒
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.location.protocol === 'file:') {
+                document.getElementById('corsWarning').style.display = 'block';
+            }
+        });
+        </script>
+
+        <!-- 主要内容区域 -->
+        <div class="card">
+            <!-- 导航标签 -->
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">
+                        <i class="bi bi-book"></i> 古诗解析
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="prompt-tab" data-bs-toggle="tab" data-bs-target="#prompt" type="button" role="tab">
+                        <i class="bi bi-lightbulb"></i> 意境提取
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image" type="button" role="tab">
+                        <i class="bi bi-image"></i> 图像生成
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="knowledge-tab" data-bs-toggle="tab" data-bs-target="#knowledge" type="button" role="tab">
+                        <i class="bi bi-collection"></i> 知识库
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                        <i class="bi bi-clock-history"></i> 对话记录
+                    </button>
+                </li>
+            </ul>
+
+            <!-- 标签页内容 -->
+            <div class="tab-content" id="mainTabContent">
+                <!-- Tab 1: 古诗解析 -->
+                <div class="tab-pane fade show active" id="analysis" role="tabpanel">
+                    <h4 class="mb-4"><i class="bi bi-book-half"></i> 古诗解析与意境理解</h4>
+                    
+                    <!-- API配置 -->
+                    <div class="config-panel">
+                        <h6><i class="bi bi-gear"></i> 通义API配置</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">阿里云百炼API Key</label>
+                                <input type="password" class="form-control" id="apiKey" placeholder="请输入阿里云百炼API Key（以 sk- 开头）">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <small class="form-text text-muted">
+                                    <strong>获取步骤：</strong><br>
+                                    1. 访问 <a href="https://bailian.console.aliyun.com/" target="_blank">阿里云百炼控制台</a><br>
+                                    2. 进入"API-KEY管理" → "创建API Key"<br>
+                                    3. 在模型服务中开通以下模型：<br>
+                                    &nbsp;&nbsp;&nbsp;• <strong>通义千问(qwen-plus)</strong> - 用于文本生成和古诗解析<br>
+                                    &nbsp;&nbsp;&nbsp;• <strong>通义万相(wanx-v1)</strong> - 用于图像生成<br>
+                                    4. 检查账户余额是否充足<br>
+                                    <br><strong>模型说明：</strong><br>
+                                    • 文本模型：${poeticPainterConfig.text_model}<br>
+                                    • 图像模型：${poeticPainterConfig.image_model}（通义万相V2版本，生成速度更快）
+                                </small>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-primary d-block" onclick="saveApiConfig()">
+                                    <i class="bi bi-check-circle"></i> 保存并测试连接
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">年级选择</label>
+                                <select class="form-select" id="gradeSelect">
+                                    <option value="一年级">一年级</option>
+                                    <option value="二年级">二年级</option>
+                                    <option value="三年级">三年级</option>
+                                    <option value="四年级">四年级</option>
+                                    <option value="五年级" selected>五年级</option>
+                                    <option value="六年级">六年级</option>
+                                    <option value="七年级">七年级</option>
+                                    <option value="八年级">八年级</option>
+                                    <option value="九年级">九年级</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">古诗原文</label>
+                        <textarea class="form-control" id="poemText" rows="5" placeholder="请输入古诗原文..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">你的感受</label>
+                        <textarea class="form-control" id="studentFeeling" rows="3" placeholder="请分享你对这首诗的理解和感受..."></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="analyzePoem()">
+                        <i class="bi bi-search"></i> 开始解析
+                    </button>
+
+                    <div class="loading" id="analysisLoading">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-2">AI正在分析古诗...</p>
+                    </div>
+
+                    <div class="result-box" id="analysisResult" style="display: none;">
+                        <h6><i class="bi bi-chat-text"></i> 解析结果</h6>
+                        <div class="streaming-text" id="analysisText"></div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: 意境提取 -->
+                <div class="tab-pane fade" id="prompt" role="tabpanel">
+                    <h4 class="mb-4"><i class="bi bi-lightbulb-fill"></i> 意境提取与提示词优化</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label">意境描述</label>
+                        <textarea class="form-control" id="moodDescription" rows="4" placeholder="从古诗解析中提取的意境描述将显示在这里..." readonly></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">关键词提取</label>
+                        <input type="text" class="form-control" id="keywords" placeholder="请输入关键词，用逗号分隔...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">绘画风格</label>
+                        <div id="styleOptions">
+                            <div class="style-option" data-style="水墨山水">水墨山水</div>
+                            <div class="style-option" data-style="儿童插画">儿童插画</div>
+                            <div class="style-option" data-style="国风写意">国风写意</div>
+                            <div class="style-option" data-style="油画风格">油画风格</div>
+                            <div class="style-option" data-style="素描风格">素描风格</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">附加说明</label>
+                        <textarea class="form-control" id="additionalDesc" rows="3" placeholder="请输入颜色、情绪、构图等附加说明..."></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="optimizePrompt()">
+                        <i class="bi bi-magic"></i> 优化提示词
+                    </button>
+
+                    <div class="loading" id="promptLoading">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-2">AI正在优化提示词...</p>
+                    </div>
+
+                    <div class="result-box" id="promptResult" style="display: none;">
+                        <h6><i class="bi bi-textarea-t"></i> 优化后的提示词</h6>
+                        <div class="streaming-text" id="optimizedPrompt"></div>
+                        <button class="btn btn-success mt-3" onclick="usePromptForImage()">
+                            <i class="bi bi-arrow-right"></i> 使用此提示词生成图像
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 3: 图像生成 -->
+                <div class="tab-pane fade" id="image" role="tabpanel">
+                    <h4 class="mb-4"><i class="bi bi-image-fill"></i> 图像生成与再创作</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label">最终提示词</label>
+                        <textarea class="form-control" id="finalPrompt" rows="4" placeholder="请输入或粘贴生成图像的提示词..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">图像风格</label>
+                                <select class="form-select" id="imageStyle">
+                                    <option value="中国水墨画风格">中国水墨画风格</option>
+                                    <option value="儿童插画风格">儿童插画风格</option>
+                                    <option value="国风写意画风格">国风写意画风格</option>
+                                    <option value="油画风格">油画风格</option>
+                                    <option value="铅笔素描风格">铅笔素描风格</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">图像尺寸</label>
+                                <select class="form-select" id="imageSize">
+                                    <option value="1024*1024">正方形 (1024*1024)</option>
+                                    <option value="1024*768">横向 (1024*768)</option>
+                                    <option value="768*1024">纵向 (768*1024)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">引导强度</label>
+                                <select class="form-select" id="guidanceScale">
+                                    <option value="1.5">较弱 (1.5)</option>
+                                    <option value="2.5" selected>标准 (2.5)</option>
+                                    <option value="3.5">较强 (3.5)</option>
+                                    <option value="5.0">很强 (5.0)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">随机种子</label>
+                                <input type="number" class="form-control" id="imageSeed" placeholder="留空自动生成" min="0" max="999999">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">水印设置</label>
+                                <select class="form-select" id="watermark">
+                                    <option value="true">启用水印</option>
+                                    <option value="false">禁用水印</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3">
+                        <small><i class="bi bi-info-circle"></i> 
+                        <strong>参数说明：</strong><br>
+                        • <strong>图像风格：</strong>不同风格会影响最终的视觉效果<br>
+                        • <strong>随机种子：</strong>相同种子会生成相似的图像，范围0-2147483647，留空则随机生成<br>
+                        • <strong>水印设置：</strong>控制是否在生成的图像右下角添加"AI生成"水印<br>
+                        • <strong>生成时间：</strong>通义万相V2版本图像生成约需1-3分钟，请耐心等待<br>
+                        所有参数均基于阿里云通义万相V2官方API文档</small>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="generateImage()">
+                        <i class="bi bi-palette"></i> 生成图像
+                    </button>
+
+                    <div class="loading" id="imageLoading">
+                        <div class="spinner-border" role="status"></div>
+                        <p class="mt-2">AI正在生成图像，请稍候...</p>
+                    </div>
+
+                    <div id="imageResult" style="display: none;">
+                        <h6 class="mt-4"><i class="bi bi-image"></i> 生成的图像</h6>
+                        <img id="generatedImage" class="image-preview" alt="生成的图像">
+                        <div class="mt-3">
+                            <button class="btn btn-success" onclick="downloadImage()">
+                                <i class="bi bi-download"></i> 下载图像
+                            </button>
+                            <button class="btn btn-secondary" onclick="regenerateImage()">
+                                <i class="bi bi-arrow-repeat"></i> 重新生成
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: 知识库 -->
+                <div class="tab-pane fade" id="knowledge" role="tabpanel">
+                    <h4 class="mb-4"><i class="bi bi-collection-fill"></i> 知识库学习</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label">上传古诗知识库 (XML格式)</label>
+                        <input type="file" class="form-control" id="knowledgeFile" accept=".xml" onchange="loadKnowledgeBase()">
+                        <div class="form-text">支持XML格式的古诗知识库文件</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">搜索古诗</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchKeyword" placeholder="输入诗名、作者或关键词...">
+                            <button class="btn btn-outline-secondary" onclick="searchKnowledge()">
+                                <i class="bi bi-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="knowledgeList" class="mt-4">
+                        <div class="knowledge-item">
+                            <h6>示例：春晓</h6>
+                            <p><strong>作者：</strong>孟浩然</p>
+                            <p><strong>年级：</strong>二年级</p>
+                            <p><strong>内容：</strong>春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。</p>
+                            <p><strong>注释：</strong>描绘春日清晨的生机与静谧</p>
+                            <button class="btn btn-sm btn-primary" onclick="useKnowledgeItem('春晓', '孟浩然', '春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。')">
+                                使用此诗
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 5: 对话记录 -->
+                <div class="tab-pane fade" id="history" role="tabpanel">
+                    <h4 class="mb-4"><i class="bi bi-clock-history"></i> 对话记录与导出</h4>
+                    
+                    <div class="export-buttons mb-4">
+                        <button class="btn btn-outline-primary" onclick="exportHistory('txt')">
+                            <i class="bi bi-file-text"></i> 导出TXT
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="exportHistory('md')">
+                            <i class="bi bi-markdown"></i> 导出Markdown
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="exportHistory('docx')">
+                            <i class="bi bi-file-word"></i> 导出Word
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="clearHistory()">
+                            <i class="bi bi-trash"></i> 清空记录
+                        </button>
+                    </div>
+
+                    <div id="historyList">
+                        <!-- 历史记录将动态添加在这里 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- html-docx-js for Word export -->
+    <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.6.1/dist/html-docx.js"></script>
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+    
+    <script>
+        // 全局配置 - 通义API
+        const poeticPainterConfig = {
+            access_key_id: "", // 阿里云百炼API Key (sk-开头)
+            qwen_base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1", // 通义千问API
+            wanx_base_url: "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis", // 通义万相V2 API
+            wanx_query_url: "https://dashscope.aliyuncs.com/api/v1/tasks", // 通义万相任务查询API
+            text_model: "qwen-plus", // 文本生成模型
+            image_model: "wanx2.1-t2i-turbo", // 图像生成模型 (使用V2版本)
+            default_grade: "五年级",
+            prompt_template: "风格：{风格}，元素：{关键词}，附加说明：{描述}",
+            image_style_options: ["水墨山水", "儿童插画", "国风写意"],
+            output_history: [],
+            knowledge_base: []
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            loadHistory();
+            setupStyleOptions();
+        });
+
+        // 保存API配置
+        function saveApiConfig() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!apiKey) {
+                alert('请输入API Key');
+                return;
+            }
+            
+            poeticPainterConfig.access_key_id = apiKey;
+            localStorage.setItem('poeticPainterConfig', JSON.stringify(poeticPainterConfig));
+            
+            // 测试API连接
+            testApiConnection(apiKey);
+        }
+
+        // 测试API连接 - 通义千问
+        async function testApiConnection(apiKey) {
+            try {
+                const headers = {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                };
+
+                console.log('Testing Qwen API connection with headers:', headers);
+                console.log('Using model:', poeticPainterConfig.text_model);
+
+                const response = await fetch(`${poeticPainterConfig.qwen_base_url}/chat/completions`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        model: poeticPainterConfig.text_model,
+                        messages: [
+                            {
+                                role: 'user',
+                                content: '你好'
+                            }
+                        ],
+                        max_tokens: 10
+                    })
+                });
+
+                console.log('API Test Response Status:', response.status);
+                console.log('API Test Response Headers:', Object.fromEntries(response.headers.entries()));
+
+                if (response.ok) {
+                    alert('通义千问API Key配置成功！连接测试通过。');
+                } else {
+                    const errorText = await response.text();
+                    console.error('API Test Failed:', errorText);
+                    
+                    let errorMessage = '配置失败：';
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        if (errorData.error && errorData.error.message) {
+                            errorMessage += errorData.error.message;
+                        } else {
+                            errorMessage += `HTTP ${response.status}`;
+                        }
+                    } catch (e) {
+                        errorMessage += errorText || `HTTP ${response.status}`;
+                    }
+                    
+                    alert(errorMessage + '\n\n请检查：\n1. 阿里云百炼API Key是否正确(sk-开头)\n2. 是否已开通通义千问模型服务\n3. 账户余额是否充足');
+                }
+                
+            } catch (error) {
+                console.error('API Test Error:', error);
+                alert('API配置测试失败：' + error.message + '\n\n请检查网络连接和API Key是否正确。');
+            }
+        }
+
+        // 加载配置
+        function loadConfig() {
+            const saved = localStorage.getItem('poeticPainterConfig');
+            if (saved) {
+                Object.assign(poeticPainterConfig, JSON.parse(saved));
+                if (poeticPainterConfig.access_key_id) {
+                    document.getElementById('apiKey').value = poeticPainterConfig.access_key_id;
+                }
+            }
+        }
+
+        // 设置风格选项
+        function setupStyleOptions() {
+            const styleOptions = document.querySelectorAll('.style-option');
+            styleOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    styleOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        }
+
+        // 通义千问文本API认证头
+        function generateQwenAuthHeader() {
+            const apiKey = poeticPainterConfig.access_key_id;
+            
+            if (!apiKey) {
+                throw new Error('请先配置阿里云百炼API Key');
+            }
+
+            return {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // 通义万相图像API认证头（V2版本）
+        function generateWanxAuthHeader() {
+            const apiKey = poeticPainterConfig.access_key_id;
+            
+            if (!apiKey) {
+                throw new Error('请先配置阿里云百炼API Key');
+            }
+
+            return {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+                'X-DashScope-Async': 'enable'  // V2版本必需的异步调用头部
+            };
+        }
+
+        // 查询任务结果的认证头
+        function generateWanxQueryAuthHeader() {
+            const apiKey = poeticPainterConfig.access_key_id;
+            
+            if (!apiKey) {
+                throw new Error('请先配置阿里云百炼API Key');
+            }
+
+            return {
+                'Authorization': `Bearer ${apiKey}`
+            };
+        }
+
+
+
+
+
+        // 古诗解析
+        async function analyzePoem() {
+            const poemText = document.getElementById('poemText').value.trim();
+            const grade = document.getElementById('gradeSelect').value;
+            const feeling = document.getElementById('studentFeeling').value.trim();
+
+            if (!poemText) {
+                alert('请输入古诗原文');
+                return;
+            }
+
+            if (!poeticPainterConfig.access_key_id) {
+                alert('请先配置API Key');
+                return;
+            }
+
+            const loading = document.getElementById('analysisLoading');
+            const result = document.getElementById('analysisResult');
+            const textDiv = document.getElementById('analysisText');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            textDiv.innerHTML = '';
+
+            try {
+                const prompt = `请作为一位优秀的语文老师，为${grade}学生解析以下古诗，请严格按照markdown格式输出：
+
+古诗原文：
+${poemText}
+
+学生感受：
+${feeling || '暂无'}
+
+请按照以下结构进行解析，使用markdown格式：
+
+## 词语注释和翻译
+（解释重点词语，提供通俗易懂的翻译）
+
+## 意境描述
+（详细描述诗中的画面、场景、氛围，要生动形象，便于学生想象和绘画创作）
+
+## 情感分析
+（分析诗人的情感和诗歌要表达的主题思想）
+
+## 学习要点
+（针对${grade}学生的理解要点和学习建议）
+
+请用通俗易懂的语言，让学生能够深入理解这首诗的美妙之处。特别是意境描述部分，要详细具体，为后续的绘画创作提供丰富的视觉元素。`;
+
+                await streamChat(prompt, textDiv, 'analysis');
+                
+            } catch (error) {
+                console.error('古诗解析失败:', error);
+                alert('古诗解析失败，请检查网络连接和API配置');
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        }
+
+        // 提取意境描述
+        function extractMoodDescription(analysisText) {
+            // 去除HTML标签，获取纯文本
+            const textContent = analysisText.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ');
+            
+            // 多种匹配模式，提取意境描述 - 扩大选取范围
+            const patterns = [
+                // 标准markdown格式
+                /## ?意境描述[：:]?\s*([^#]*?)(?=##|\n##|$)/s,
+                /### ?意境描述[：:]?\s*([^#]*?)(?=###|\n###|$)/s,
+                // 带冒号的格式
+                /意境描述[：:]\s*([^#]*?)(?=##|情感分析|学习要点|适合|$)/s,
+                // 更宽泛的匹配
+                /意境描述[：:]?\s*([\s\S]*?)(?=##|情感分析|学习要点|适合|$)/s,
+                // 寻找意境相关的完整段落
+                /意境[：:]?\s*([^。！？]*[。！？][^#]*?)(?=##|情感分析|学习要点|$)/s,
+                // 描绘类型的句子
+                /描绘了([\s\S]*?)(?=##|情感分析|学习要点|$)/s
+            ];
+            
+            let extractedMood = '';
+            
+            for (const pattern of patterns) {
+                const match = textContent.match(pattern);
+                if (match && match[1]) {
+                    extractedMood = match[1].trim();
+                    // 如果提取的内容足够长，就使用它
+                    if (extractedMood.length > 20) {
+                        break;
+                    }
+                }
+            }
+            
+            // 如果仍然没有匹配到或内容太短，尝试提取包含"意境"关键词的多个句子
+            if (!extractedMood || extractedMood.length < 20) {
+                const sentences = textContent.split(/[。！？]/);
+                let moodSentences = [];
+                let foundMoodSection = false;
+                
+                for (let i = 0; i < sentences.length; i++) {
+                    const sentence = sentences[i].trim();
+                    
+                    // 如果遇到意境描述标题，标记开始收集
+                    if (sentence.includes('意境描述')) {
+                        foundMoodSection = true;
+                        continue;
+                    }
+                    
+                    // 如果在意境描述部分，收集句子
+                    if (foundMoodSection) {
+                        if (sentence.length > 5 && !sentence.includes('##') && !sentence.includes('情感分析') && !sentence.includes('学习要点')) {
+                            moodSentences.push(sentence);
+                        }
+                        // 如果遇到下一个部分的标题，停止收集
+                        if (sentence.includes('情感分析') || sentence.includes('学习要点') || sentence.includes('##')) {
+                            break;
+                        }
+                    }
+                    
+                    // 或者直接收集包含意境相关词汇的句子
+                    if (sentence.includes('意境') || sentence.includes('画面') || sentence.includes('场景') || sentence.includes('描绘')) {
+                        if (sentence.length > 10) {
+                            moodSentences.push(sentence);
+                        }
+                    }
+                }
+                
+                if (moodSentences.length > 0) {
+                    extractedMood = moodSentences.join('。') + '。';
+                }
+            }
+            
+            if (extractedMood) {
+                // 清理提取的内容
+                extractedMood = extractedMood
+                    .replace(/^\s*[\-\*\+]\s*/, '') // 移除列表标记
+                    .replace(/^\s*\d+\.\s*/, '')    // 移除数字编号
+                    .replace(/^\s*[：:]\s*/, '')     // 移除开头的冒号
+                    .replace(/\s+/g, ' ')           // 规范化空格
+                    .trim();
+                    
+                // 确保以句号结尾
+                if (!extractedMood.endsWith('。') && !extractedMood.endsWith('！') && !extractedMood.endsWith('？')) {
+                    extractedMood += '。';
+                }
+                    
+                document.getElementById('moodDescription').value = extractedMood;
+                console.log('提取的意境描述:', extractedMood);
+            } else {
+                console.log('未能提取到意境描述，原文本:', textContent.substring(0, 500));
+            }
+        }
+
+        // 优化提示词
+        async function optimizePrompt() {
+            const mood = document.getElementById('moodDescription').value.trim();
+            const keywords = document.getElementById('keywords').value.trim();
+            const selectedStyle = document.querySelector('.style-option.selected')?.dataset.style || '水墨山水';
+            const additionalDesc = document.getElementById('additionalDesc').value.trim();
+
+            if (!mood && !keywords) {
+                alert('请先进行古诗解析或手动输入关键词');
+                return;
+            }
+
+            const loading = document.getElementById('promptLoading');
+            const result = document.getElementById('promptResult');
+            const textDiv = document.getElementById('optimizedPrompt');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            textDiv.innerHTML = '';
+
+            try {
+                const prompt = `请根据以下古诗意境信息，生成一个纯中文的AI绘画提示词：
+
+意境描述：${mood}
+关键词：${keywords}
+绘画风格：${selectedStyle}
+附加说明：${additionalDesc}
+
+请生成一个详细的中文绘画提示词，包含以下要素：
+
+## 主要场景元素
+（描述画面中的主要物体、人物、建筑等）
+
+## 自然环境
+（描述天空、山水、植物、季节特征等）
+
+## 色彩氛围
+（描述整体色调、光影效果、氛围感受）
+
+## 艺术风格
+（融合指定的绘画风格特点）
+
+## 构图布局
+（描述画面的整体构图和视角）
+
+请确保提示词完全使用中文，生动具体，能够让AI绘画工具准确理解并生成符合古诗意境的高质量图像。
+
+## 最终完整提示词
+请将以上所有要素整合成一段完整的中文绘画提示词，直接可用于AI绘画生成：`;
+
+                await streamChat(prompt, textDiv, 'prompt');
+                
+            } catch (error) {
+                console.error('提示词优化失败:', error);
+                alert('提示词优化失败，请检查网络连接');
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        }
+
+        // 使用提示词生成图像
+        function usePromptForImage() {
+            const optimizedContent = document.getElementById('optimizedPrompt').innerText;
+            
+            // 提取最终的完整提示词，跳过前面的分析部分
+            let finalPrompt = '';
+            
+            // 尝试多种提取模式
+            const extractPatterns = [
+                // 寻找"最终完整提示词"部分的内容
+                /## ?最终完整提示词[：:]?\s*([^#]*?)(?=##|$)/s,
+                // 寻找"最终提示词"、"完整提示词"等标记
+                /(?:最终|完整|综合|整合).*?提示词[：:]?\s*([^#\n]*(?:\n[^#\n]*)*)/s,
+                // 寻找最后一段连续的中文描述
+                /(?:.*\n)*([^#\n]*(?:风格|画面|色调|构图|山水|意境).*(?:\n[^#\n]*)*)/s,
+                // 寻找包含多个绘画元素的长段落
+                /((?:[^。！？\n]*(?:山水|风景|色彩|光影|构图|风格|意境)[^。！？\n]*[。！？]\s*){2,})/s
+            ];
+            
+            for (const pattern of extractPatterns) {
+                const match = optimizedContent.match(pattern);
+                if (match && match[1]) {
+                    const candidate = match[1].trim();
+                    if (candidate.length > 50) { // 确保是一个完整的描述
+                        finalPrompt = candidate;
+                        break;
+                    }
+                }
+            }
+            
+            // 如果没有找到合适的提示词，尝试提取最后一个较长的段落
+            if (!finalPrompt) {
+                const paragraphs = optimizedContent.split('\n').filter(p => p.trim().length > 0);
+                for (let i = paragraphs.length - 1; i >= 0; i--) {
+                    const paragraph = paragraphs[i].trim();
+                    // 跳过标题行和短句
+                    if (!paragraph.includes('#') && paragraph.length > 50 && 
+                        (paragraph.includes('风格') || paragraph.includes('画面') || paragraph.includes('色彩'))) {
+                        finalPrompt = paragraph;
+                        break;
+                    }
+                }
+            }
+            
+            // 如果还是没有找到，使用整个内容但清理格式
+            if (!finalPrompt) {
+                finalPrompt = optimizedContent
+                    .replace(/#.*?\n/g, '') // 移除标题
+                    .replace(/（.*?）/g, '') // 移除括号内容
+                    .replace(/\n+/g, ' ')   // 合并换行
+                    .trim();
+            }
+            
+            // 清理最终提示词
+            finalPrompt = finalPrompt
+                .replace(/^[：:]\s*/, '')  // 移除开头冒号
+                .replace(/\s+/g, ' ')      // 规范化空格
+                .trim();
+            
+            document.getElementById('finalPrompt').value = finalPrompt;
+            console.log('提取的最终提示词:', finalPrompt);
+            
+            // 切换到图像生成标签页
+            const imageTab = document.getElementById('image-tab');
+            imageTab.click();
+        }
+
+        // 生成图像
+        async function generateImage() {
+            const prompt = document.getElementById('finalPrompt').value.trim();
+            const style = document.getElementById('imageStyle').value;
+            const size = document.getElementById('imageSize').value;
+            const guidanceScale = parseFloat(document.getElementById('guidanceScale').value);
+            const seedInput = document.getElementById('imageSeed').value.trim();
+            const watermark = document.getElementById('watermark').value === 'true';
+            
+            // 如果没有输入种子，则随机生成
+            const seed = seedInput ? parseInt(seedInput) : Math.floor(Math.random() * 1000000);
+
+            if (!prompt) {
+                alert('请输入提示词');
+                return;
+            }
+
+            if (!poeticPainterConfig.access_key_id) {
+                alert('请先配置API Key');
+                return;
+            }
+
+            const loading = document.getElementById('imageLoading');
+            const result = document.getElementById('imageResult');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            // 使用官方API格式调用
+            try {
+                console.log('使用官方API格式调用图像生成...');
+                await generateImageStandard(prompt, style, size, guidanceScale, seed, watermark);
+                
+            } catch (error) {
+                console.error('图像生成失败:', error);
+                alert('图像生成失败：' + error.message + '\n\n请检查：\n1. API Key是否正确\n2. 网络连接是否正常\n3. 账户余额是否充足\n4. 是否已开通图像生成模型');
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        }
+
+        // 通义万相图像生成API（V2版本格式）
+        async function generateImageStandard(prompt, style, size, guidanceScale, seed, watermark) {
+            const fullPrompt = `${prompt}, ${style}, high quality, detailed`;
+            
+            // 按照通义万相V2版API文档格式构造请求数据
+            const requestData = {
+                model: poeticPainterConfig.image_model,
+                input: {
+                    prompt: fullPrompt,
+                    negative_prompt: "low quality, blurry, distorted, ugly"
+                },
+                parameters: {
+                    size: size,
+                    seed: seed || Math.floor(Math.random() * 2147483647),  // V2版本seed范围[0, 2147483647]
+                    n: 1,
+                    watermark: watermark || false
+                }
+            };
+            
+            console.log('通义万相图像生成请求数据:', requestData);
+            
+            try {
+                // 检测运行环境
+                const isLocalFile = window.location.protocol === 'file:';
+                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                
+                if (isLocalFile) {
+                    // 如果是本地文件，显示运行服务器的指引
+                    throw new Error('CORS_LOCAL_FILE');
+                }
+                
+                // 尝试多种调用方式
+                let success = false;
+                let lastError = null;
+                
+                // 方法1: 优先尝试Vercel API代理（如果在Vercel环境）
+                const isVercelDeployment = window.location.hostname.includes('vercel.app') || 
+                                          window.location.hostname.includes('vercel.live');
+                
+                if (isVercelDeployment) {
+                    try {
+                        console.log('检测到Vercel环境，使用Vercel API代理...');
+                        await callWanxViaVercel(requestData, fullPrompt, style, seed);
+                        success = true;
+                    } catch (vercelError) {
+                        console.warn('Vercel API代理调用失败:', vercelError.message);
+                        lastError = vercelError;
+                    }
+                }
+                
+                // 方法2: 如果Vercel代理失败或非Vercel环境，尝试公共代理服务
+                if (!success) {
+                    try {
+                        console.log('尝试通过CORS代理调用通义万相API...');
+                        await callWanxViaProxy(requestData, fullPrompt, style, seed);
+                        success = true;
+                    } catch (proxyError) {
+                        console.warn('代理调用失败:', proxyError.message);
+                        lastError = proxyError;
+                    }
+                }
+                
+                // 方法3: 如果代理失败，尝试直接调用（仅在本地服务器环境下）
+                if (!success && isLocalhost) {
+                    try {
+                        console.log('尝试直接调用通义万相API...');
+                        await callWanxDirectly(requestData, fullPrompt, style, seed);
+                        success = true;
+                    } catch (directError) {
+                        console.warn('直接调用失败:', directError.message);
+                        lastError = directError;
+                    }
+                }
+                
+                if (!success) {
+                    throw lastError || new Error('所有调用方式都失败了');
+                }
+                
+            } catch (error) {
+                console.error('通义万相V2图像生成失败:', error);
+                // 显示错误信息和解决方案
+                showWanxErrorSolution(error.message, prompt, style, size, guidanceScale, seed, watermark);
+                throw error;
+            }
+        }
+
+        // 通过Vercel API代理调用通义万相API（优先方案）
+        async function callWanxViaVercel(requestData, fullPrompt, style, seed) {
+            try {
+                console.log('使用Vercel API代理调用通义万相...');
+                
+                const response = await fetch('/api/wanx-image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${poeticPainterConfig.access_key_id}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                console.log('Vercel代理响应状态:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Vercel代理响应数据:', data);
+                    
+                    if (data.output && data.output.task_id) {
+                        const taskId = data.output.task_id;
+                        console.log('任务创建成功，任务ID:', taskId);
+                        await pollWanxV2TaskResult(taskId, fullPrompt, style, seed);
+                        return;
+                    } else {
+                        throw new Error('任务创建失败，未返回任务ID');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error('Vercel代理调用失败:', errorText);
+                    throw new Error(`Vercel API代理错误: ${response.status} - ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Vercel API代理异常:', error);
+                throw error;
+            }
+        }
+
+        // 通过CORS代理调用通义万相API
+        async function callWanxViaProxy(requestData, fullPrompt, style, seed) {
+            const proxyUrls = [
+                'https://cors-anywhere.herokuapp.com/',
+                'https://api.allorigins.win/raw?url=',
+                'https://corsproxy.io/?'
+            ];
+            
+            for (const proxyUrl of proxyUrls) {
+                try {
+                    console.log(`尝试代理: ${proxyUrl}`);
+                    
+                    const url = proxyUrl + encodeURIComponent(poeticPainterConfig.wanx_base_url);
+                    const headers = generateWanxAuthHeader();
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('代理调用成功，响应数据:', data);
+                        
+                        if (data.output && data.output.task_id) {
+                            const taskId = data.output.task_id;
+                            console.log('任务创建成功，任务ID:', taskId);
+                            await pollWanxV2TaskResult(taskId, fullPrompt, style, seed);
+                            return;
+                        } else {
+                            throw new Error('任务创建失败，未返回任务ID');
+                        }
+                    } else {
+                        console.warn(`代理 ${proxyUrl} 调用失败: ${response.status}`);
+                        continue;
+                    }
+                } catch (error) {
+                    console.warn(`代理 ${proxyUrl} 出错:`, error.message);
+                    continue;
+                }
+            }
+            
+            throw new Error('所有CORS代理都无法使用');
+        }
+
+        // 直接调用通义万相API（仅限本地服务器环境）
+        async function callWanxDirectly(requestData, fullPrompt, style, seed) {
+            const headers = generateWanxAuthHeader();
+            console.log('直接调用通义万相V2 API，请求数据:', requestData);
+            
+            const response = await fetch(poeticPainterConfig.wanx_base_url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(requestData)
+            });
+            
+            console.log('通义万相任务创建响应状态:', response.status);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('通义万相任务创建响应数据:', data);
+                
+                if (data.output && data.output.task_id) {
+                    const taskId = data.output.task_id;
+                    console.log('任务创建成功，任务ID:', taskId);
+                    await pollWanxV2TaskResult(taskId, fullPrompt, style, seed);
+                    return;
+                } else {
+                    throw new Error('任务创建失败，未返回任务ID: ' + JSON.stringify(data));
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('通义万相V2任务创建失败:', errorText);
+                
+                let errorMessage = `API调用失败: ${response.status}`;
+                try {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    } else if (errorData.code) {
+                        errorMessage = `错误码: ${errorData.code}`;
+                    }
+                } catch (e) {
+                    errorMessage += ` - ${errorText}`;
+                }
+                
+                throw new Error(errorMessage);
+            }
+        }
+
+
+        // 轮询通义万相V2异步任务结果
+        async function pollWanxV2TaskResult(taskId, fullPrompt, style, seed) {
+            const maxAttempts = 60; // 最多轮询60次（约3分钟）
+            const interval = 3000; // 每3秒查询一次
+            
+            console.log(`开始轮询任务结果，任务ID: ${taskId}`);
+            
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                try {
+                    // 使用Vercel API代理查询任务状态，避免CORS问题
+                    const queryUrl = `/api/wanx-query?taskId=${taskId}`;
+                    const headers = {
+                        'Authorization': `Bearer ${poeticPainterConfig.access_key_id}`,
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    console.log(`第${attempt + 1}次查询任务状态: ${queryUrl}`);
+                    
+                    const response = await fetch(queryUrl, {
+                        method: 'GET',
+                        headers: headers
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(`第${attempt + 1}次查询结果:`, data);
+                        
+                        if (data.output && data.output.task_status === 'SUCCEEDED') {
+                            // 任务成功完成
+                            if (data.output.results && data.output.results.length > 0) {
+                                const result = data.output.results[0];
+                                const imageUrl = result.url;
+                                
+                                const imageElement = document.getElementById('generatedImage');
+                                imageElement.src = imageUrl;
+                                imageElement.dataset.originalUrl = imageUrl;
+                                
+                                // 记录到历史
+                                addToHistory('图像生成', `提示词: ${fullPrompt}`, `生成了一张${style}风格的图像，种子值: ${seed}`);
+                                console.log('通义万相V2图像生成成功:', imageUrl);
+                                
+                                // 如果有实际使用的提示词，也记录下来
+                                if (result.actual_prompt) {
+                                    console.log('实际使用的提示词:', result.actual_prompt);
+                                }
+                                
+                                return;
+                            } else {
+                                throw new Error('任务成功但无结果数据');
+                            }
+                        } else if (data.output && data.output.task_status === 'FAILED') {
+                            // 任务失败
+                            const errorMsg = data.output.message || data.message || '未知错误';
+                            throw new Error('图像生成任务失败: ' + errorMsg);
+                        } else if (data.output && (data.output.task_status === 'PENDING' || data.output.task_status === 'RUNNING')) {
+                            // 任务还在进行中
+                            console.log(`第${attempt + 1}次查询，任务状态: ${data.output.task_status}`);
+                            await new Promise(resolve => setTimeout(resolve, interval));
+                            continue;
+                        } else {
+                            // 未知状态
+                            console.warn(`第${attempt + 1}次查询，未知任务状态:`, data);
+                            await new Promise(resolve => setTimeout(resolve, interval));
+                            continue;
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        console.error(`第${attempt + 1}次查询失败，状态码: ${response.status}，响应: ${errorText}`);
+                        
+                        // 如果是404，可能任务不存在
+                        if (response.status === 404) {
+                            throw new Error('任务不存在或已过期');
+                        }
+                        
+                        await new Promise(resolve => setTimeout(resolve, interval));
+                        continue;
+                    }
+                } catch (error) {
+                    console.error(`第${attempt + 1}次查询异常:`, error);
+                    
+                    // 如果是网络错误，继续重试
+                    if (error.message.includes('fetch') || error.message.includes('network')) {
+                        await new Promise(resolve => setTimeout(resolve, interval));
+                        continue;
+                    } else {
+                        // 其他错误直接抛出
+                        throw error;
+                    }
+                }
+            }
+            
+            throw new Error('图像生成任务超时（3分钟），请稍后重试或检查网络连接');
+        }
+        
+        // 显示通义万相错误解决方案
+        function showWanxErrorSolution(errorMessage, prompt, style, size, guidanceScale, seed, watermark) {
+            const resultDiv = document.getElementById('imageResult');
+            const fullPrompt = `${prompt}, ${style}, high quality, detailed`;
+            const isLocalFile = window.location.protocol === 'file:';
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            
+            let solutionHtml = '';
+            
+            if (errorMessage === 'CORS_LOCAL_FILE' || isLocalFile) {
+                // 本地文件CORS问题
+                solutionHtml = `
+                    <div class="alert alert-danger">
+                        <h6><i class="bi bi-exclamation-triangle"></i> 检测到本地文件运行模式</h6>
+                        <p><strong>问题：</strong>您正在通过双击HTML文件的方式运行，这会导致CORS跨域问题。</p>
+                        <p><strong>原因：</strong>阿里云通义万相API出于安全考虑，不允许从本地文件直接调用。</p>
+                        
+                        <div class="alert alert-success mt-3">
+                            <h6><i class="bi bi-lightbulb"></i> 推荐解决方案</h6>
+                            
+                            <div class="mb-3">
+                                <p><strong>方法1：Python HTTP服务器（推荐）</strong></p>
+                                <ol>
+                                    <li>在HTML文件所在目录打开终端/命令提示符</li>
+                                    <li>运行命令：<code>python -m http.server 8000</code></li>
+                                    <li>打开浏览器访问：<a href="http://localhost:8000" target="_blank"><strong>http://localhost:8000</strong></a></li>
+                                </ol>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <p><strong>方法2：Node.js服务器</strong></p>
+                                <ol>
+                                    <li>安装serve：<code>npm install -g serve</code></li>
+                                    <li>在文件目录运行：<code>serve .</code></li>
+                                    <li>按照提示访问本地地址</li>
+                                </ol>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <p><strong>方法3：Live Server（VS Code用户）</strong></p>
+                                <ol>
+                                    <li>安装 Live Server 扩展</li>
+                                    <li>右键HTML文件选择"Open with Live Server"</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 其他错误
+                solutionHtml = `
+                    <div class="alert alert-warning">
+                        <h6><i class="bi bi-exclamation-triangle"></i> 通义万相图像生成失败</h6>
+                        <p><strong>错误信息：</strong>${errorMessage}</p>
+                        
+                        <div class="alert alert-info mt-3">
+                            <h6><i class="bi bi-lightbulb"></i> 问题诊断和解决方案</h6>
+                            
+                            ${!isLocalhost ? `
+                            <div class="mb-3">
+                                <p><strong>1. CORS跨域问题</strong></p>
+                                <p>如果错误信息包含"CORS"、"Failed to fetch"，需要：</p>
+                                <ul>
+                                    <li>通过本地HTTP服务器运行：<code>python -m http.server 8000</code></li>
+                                    <li>访问：<strong>http://localhost:8000</strong></li>
+                                    <li>或部署到支持CORS的服务器</li>
+                                </ul>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="mb-3">
+                                <p><strong>2. API Key配置问题</strong></p>
+                                <ul>
+                                    <li>确保使用阿里云百炼平台的API Key (sk-开头)</li>
+                                    <li>访问 <a href="https://bailian.console.aliyun.com/?tab=api" target="_blank">阿里云百炼控制台</a> 获取API Key</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <p><strong>3. 模型服务开通</strong></p>
+                                <ul>
+                                    <li>确保已开通通义万相V2 (wanx2.1-t2i-turbo) 模型服务</li>
+                                    <li>在百炼控制台的"模型广场"中开通所需模型</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <p><strong>4. 账户余额检查</strong></p>
+                                <ul>
+                                    <li>确保账户有足够的余额支持图像生成</li>
+                                    <li>查看百炼控制台的"资源包管理"</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <p><strong>5. 网络连接</strong></p>
+                                <ul>
+                                    <li>检查网络连接是否正常</li>
+                                    <li>确认防火墙没有阻止API请求</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <p><strong>当前请求信息：</strong></p>
+                            <small>
+                                • 运行环境：${isLocalFile ? '本地文件' : isLocalhost ? '本地服务器' : '远程服务器'}<br>
+                                • 提示词：${fullPrompt}<br>
+                                • 尺寸：${size}<br>
+                                • 随机种子：${seed}<br>
+                                • 水印：${watermark ? '启用' : '禁用'}
+                            </small>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = solutionHtml;
+            console.error('通义万相API调用失败:', errorMessage);
+        }
+
+        // 显示CORS解决方案
+        function showCORSSolution(prompt, style, size, guidanceScale, seed, watermark) {
+            const resultDiv = document.getElementById('imageResult');
+            const fullPrompt = `${prompt}, ${style}, high quality, detailed`;
+            
+            resultDiv.innerHTML = `
+                <div class="alert alert-warning">
+                    <h6><i class="bi bi-exclamation-triangle"></i> 图像生成受到CORS限制</h6>
+                    <p><strong>问题原因：</strong>浏览器安全策略阻止了从本地HTML文件向外部API的直接请求。</p>
+                    
+                    <div class="alert alert-info mt-3">
+                        <h6><i class="bi bi-lightbulb"></i> 完整解决方案</h6>
+                        <p><strong>方式1 - Vercel部署 (推荐)：</strong></p>
+                        <ol>
+                            <li>将项目文件上传到GitHub仓库</li>
+                            <li>在Vercel.com创建账户并连接GitHub</li>
+                            <li>导入项目并部署，即可完整使用所有功能</li>
+                        </ol>
+                        <p><strong>方式2 - 本地HTTP服务器：</strong></p>
+                        <ol>
+                            <li>在文件所在目录打开终端</li>
+                            <li>运行命令：<code>python -m http.server 8000</code></li>
+                            <li>访问：<strong>http://localhost:8000</strong></li>
+                        </ol>
+                        <p><strong>方式3 - 代理API：</strong>已自动尝试多个备用代理服务</p>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <p><strong>当前配置信息：</strong></p>
+                        <small>
+                            • 提示词：${fullPrompt}<br>
+                            • 尺寸：${size}<br>
+                            • 引导强度：${guidanceScale}<br>
+                            • 随机种子：${seed}<br>
+                            • 水印：${watermark ? '启用' : '禁用'}
+                        </small>
+                    </div>
+                </div>
+            `;
+            
+            console.warn('CORS限制：需要通过HTTP服务器运行应用');
+        }
+
+        // 下载图像
+        function downloadImage() {
+            const imageElement = document.getElementById('generatedImage');
+            const imageUrl = imageElement.src;
+            
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = `古诗配画_${new Date().getTime()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 重新生成图像
+        function regenerateImage() {
+            generateImage();
+        }
+
+        // 通义千问流式聊天
+        async function streamChat(prompt, outputElement, type) {
+            console.log('通义千问 StreamChat 开始调用:', {
+                type: type,
+                prompt: prompt.substring(0, 100) + '...',
+                apiKey: poeticPainterConfig.access_key_id ? '已配置' : '未配置'
+            });
+
+            try {
+                const headers = generateQwenAuthHeader();
+                console.log('Request headers:', headers);
+
+                const requestBody = {
+                    model: poeticPainterConfig.text_model,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    stream: true,
+                    temperature: 0.7,
+                    max_tokens: 2000
+                };
+                
+                console.log('Request body:', requestBody);
+
+                const response = await fetch(`${poeticPainterConfig.qwen_base_url}/chat/completions`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('通义千问 API Error Response:', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: Object.fromEntries(response.headers.entries()),
+                        body: errorText
+                    });
+                    
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        if (errorData.error && errorData.error.message) {
+                            errorMessage = errorData.error.message;
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+                    } catch (e) {
+                        // 如果不是JSON格式，使用原始错误文本
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.choices && json.choices[0].delta && json.choices[0].delta.content) {
+                                    const content = json.choices[0].delta.content;
+                                    fullText += content;
+                                    
+                                    // 实时渲染markdown格式
+                                    const renderedHtml = marked.parse(fullText);
+                                    outputElement.innerHTML = renderedHtml;
+                                    outputElement.scrollTop = outputElement.scrollHeight;
+                                }
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        }
+                    }
+                }
+
+                // 添加到历史记录
+                addToHistory(type, prompt, fullText);
+                
+                // 如果是古诗解析，自动提取意境描述
+                if (type === 'analysis') {
+                    setTimeout(() => {
+                        extractMoodDescription(outputElement.innerHTML);
+                    }, 500); // 稍微延迟确保DOM已更新
+                }
+                
+            } catch (error) {
+                console.error('通义千问流式聊天失败:', error);
+                throw error;
+            }
+        }
+
+        // 加载知识库
+        function loadKnowledgeBase() {
+            const fileInput = document.getElementById('knowledgeFile');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
+                    const poems = xmlDoc.getElementsByTagName('poem');
+                    
+                    poeticPainterConfig.knowledge_base = [];
+                    const knowledgeList = document.getElementById('knowledgeList');
+                    knowledgeList.innerHTML = '';
+
+                    for (let i = 0; i < poems.length; i++) {
+                        const poem = poems[i];
+                        const poemData = {
+                            title: poem.getElementsByTagName('title')[0]?.textContent || '',
+                            author: poem.getElementsByTagName('author')[0]?.textContent || '',
+                            content: poem.getElementsByTagName('content')[0]?.textContent || '',
+                            grade: poem.getElementsByTagName('grade')[0]?.textContent || '',
+                            note: poem.getElementsByTagName('note')[0]?.textContent || ''
+                        };
+                        
+                        poeticPainterConfig.knowledge_base.push(poemData);
+                        
+                        // 创建知识库项目
+                        const knowledgeItem = createKnowledgeItem(poemData);
+                        knowledgeList.appendChild(knowledgeItem);
+                    }
+                    
+                    alert(`成功加载 ${poems.length} 首古诗到知识库`);
+                    
+                } catch (error) {
+                    console.error('XML解析失败:', error);
+                    alert('XML文件格式错误，请检查文件格式');
+                }
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // 创建知识库项目
+        function createKnowledgeItem(poemData) {
+            const div = document.createElement('div');
+            div.className = 'knowledge-item';
+            div.innerHTML = `
+                <h6>${poemData.title}</h6>
+                <p><strong>作者：</strong>${poemData.author}</p>
+                <p><strong>年级：</strong>${poemData.grade}</p>
+                <p><strong>内容：</strong>${poemData.content}</p>
+                <p><strong>注释：</strong>${poemData.note}</p>
+                <button class="btn btn-sm btn-primary" onclick="useKnowledgeItem('${poemData.title}', '${poemData.author}', '${poemData.content}')">
+                    使用此诗
+                </button>
+            `;
+            return div;
+        }
+
+        // 搜索知识库
+        function searchKnowledge() {
+            const keyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
+            if (!keyword) {
+                alert('请输入搜索关键词');
+                return;
+            }
+
+            const knowledgeList = document.getElementById('knowledgeList');
+            knowledgeList.innerHTML = '';
+
+            const results = poeticPainterConfig.knowledge_base.filter(poem => 
+                poem.title.toLowerCase().includes(keyword) ||
+                poem.author.toLowerCase().includes(keyword) ||
+                poem.content.toLowerCase().includes(keyword)
+            );
+
+            if (results.length === 0) {
+                knowledgeList.innerHTML = '<p class="text-muted">未找到相关古诗</p>';
+                return;
+            }
+
+            results.forEach(poemData => {
+                const knowledgeItem = createKnowledgeItem(poemData);
+                knowledgeList.appendChild(knowledgeItem);
+            });
+        }
+
+        // 使用知识库中的诗
+        function useKnowledgeItem(title, author, content) {
+            document.getElementById('poemText').value = content;
+            
+            // 切换到古诗解析标签页
+            const analysisTab = document.getElementById('analysis-tab');
+            analysisTab.click();
+            
+            alert(`已将《${title}》填入古诗解析页面`);
+        }
+
+        // 添加到历史记录
+        function addToHistory(type, input, output) {
+            const historyItem = {
+                timestamp: new Date().toLocaleString(),
+                type: type,
+                input: input,
+                output: output
+            };
+            
+            poeticPainterConfig.output_history.push(historyItem);
+            localStorage.setItem('poeticPainterConfig', JSON.stringify(poeticPainterConfig));
+            
+            updateHistoryDisplay();
+        }
+
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            poeticPainterConfig.output_history.slice(-20).reverse().forEach(item => {
+                const historyDiv = document.createElement('div');
+                historyDiv.className = 'history-item';
+                historyDiv.innerHTML = `
+                    <div class="history-time">${item.timestamp} - ${item.type}</div>
+                    <div><strong>输入：</strong>${item.input.substring(0, 100)}${item.input.length > 100 ? '...' : ''}</div>
+                    <div><strong>输出：</strong>${item.output.substring(0, 200)}${item.output.length > 200 ? '...' : ''}</div>
+                `;
+                historyList.appendChild(historyDiv);
+            });
+        }
+
+        // 加载历史记录
+        function loadHistory() {
+            updateHistoryDisplay();
+        }
+
+        // 导出历史记录
+        function exportHistory(format) {
+            if (poeticPainterConfig.output_history.length === 0) {
+                alert('没有历史记录可导出');
+                return;
+            }
+
+            let content = '';
+            const timestamp = new Date().toLocaleString();
+            
+            if (format === 'txt') {
+                content = `古诗配画智能体 - 对话记录\n导出时间：${timestamp}\n\n`;
+                poeticPainterConfig.output_history.forEach((item, index) => {
+                    content += `--- 记录 ${index + 1} ---\n`;
+                    content += `时间：${item.timestamp}\n`;
+                    content += `类型：${item.type}\n`;
+                    content += `输入：${item.input}\n`;
+                    content += `输出：${item.output}\n\n`;
+                });
+                
+                downloadFile(content, `古诗配画记录_${Date.now()}.txt`, 'text/plain');
+                
+            } else if (format === 'md') {
+                content = `# 古诗配画智能体 - 对话记录\n\n**导出时间：** ${timestamp}\n\n`;
+                poeticPainterConfig.output_history.forEach((item, index) => {
+                    content += `## 记录 ${index + 1}\n\n`;
+                    content += `**时间：** ${item.timestamp}\n`;
+                    content += `**类型：** ${item.type}\n`;
+                    content += `**输入：** ${item.input}\n`;
+                    content += `**输出：** ${item.output}\n\n---\n\n`;
+                });
+                
+                downloadFile(content, `古诗配画记录_${Date.now()}.md`, 'text/markdown');
+                
+            } else if (format === 'docx') {
+                // 使用html-docx-js库导出Word文档
+                let htmlContent = `<h1>古诗配画智能体 - 对话记录</h1>`;
+                htmlContent += `<p><strong>导出时间：</strong>${timestamp}</p>`;
+                
+                poeticPainterConfig.output_history.forEach((item, index) => {
+                    htmlContent += `<h2>记录 ${index + 1}</h2>`;
+                    htmlContent += `<p><strong>时间：</strong>${item.timestamp}</p>`;
+                    htmlContent += `<p><strong>类型：</strong>${item.type}</p>`;
+                    htmlContent += `<p><strong>输入：</strong>${item.input}</p>`;
+                    htmlContent += `<p><strong>输出：</strong>${item.output}</p>`;
+                    htmlContent += `<hr>`;
+                });
+                
+                const converted = htmlDocx.asBlob(htmlContent);
+                const url = URL.createObjectURL(converted);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `古诗配画记录_${Date.now()}.docx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // 下载文件
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // 清空历史记录
+        function clearHistory() {
+            if (confirm('确定要清空所有历史记录吗？此操作不可恢复。')) {
+                poeticPainterConfig.output_history = [];
+                localStorage.setItem('poeticPainterConfig', JSON.stringify(poeticPainterConfig));
+                updateHistoryDisplay();
+                alert('历史记录已清空');
+            }
+        }
+    </script>
+</body>
+</html>
