@@ -1,8 +1,4 @@
 {
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/古诗配画智能体.html"
-    }
-  ]
+  "buildCommand": "cp 古诗配画智能体.html public/index.html || echo 'File already exists'",
+  "outputDirectory": "public"
 } 
