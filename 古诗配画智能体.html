@@ -1317,8 +1317,12 @@ ${feeling || '暂无'}
             
             for (let attempt = 0; attempt < maxAttempts; attempt++) {
                 try {
-                    const headers = generateWanxQueryAuthHeader();
-                    const queryUrl = `${poeticPainterConfig.wanx_query_url}/${taskId}`;
+                    // 使用Vercel API代理查询任务状态，避免CORS问题
+                    const queryUrl = `/api/wanx-query?taskId=${taskId}`;
+                    const headers = {
+                        'Authorization': `Bearer ${poeticPainterConfig.access_key_id}`,
+                        'Content-Type': 'application/json'
+                    };
                     
                     console.log(`第${attempt + 1}次查询任务状态: ${queryUrl}`);
                     
